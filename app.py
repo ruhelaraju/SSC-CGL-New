@@ -283,10 +283,8 @@ with open("SSC_CGL_Marks.csv", newline='') as f:
 # =====================================================
 # ANALYTICS PAGE
 # =====================================================
-elif st.session_state.page == "Analytics":
 
-    st.header("📈 Advanced Analytics (Coming Soon)")
-    st.info("Future upgrades will include probability modeling, cutoff simulation & AI allocation engine.")
+
 
 
 
