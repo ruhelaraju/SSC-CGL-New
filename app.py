@@ -67,14 +67,17 @@ if st.session_state.page == "Home":
 # =====================================================
 elif st.session_state.page == "Predictor":
 
+    import os
+    import pandas as pd
+
     st.header("📊 AI-Based Merit & Post Predictor")
 
-    # -------------------------------
+    # ===============================
     # USER INPUT
-    # -------------------------------
+    # ===============================
     st.sidebar.header("Step 1: Your Marks")
 
-    u_marks = st.sidebar.number_input("Main Paper Marks", 0.0, 390.0, 310.0)
+    u_main = st.sidebar.number_input("Main Paper Marks", 0.0, 390.0, 310.0)
     u_stat = st.sidebar.number_input("Statistics Marks", 0.0, 200.0, 0.0)
     u_comp = st.sidebar.number_input("Computer Marks", 0.0, 60.0, 25.0)
     u_cat = st.sidebar.selectbox("Category", ["UR", "OBC", "EWS", "SC", "ST"])
@@ -82,58 +85,70 @@ elif st.session_state.page == "Predictor":
     st.sidebar.markdown("### 🎯 Bonus Simulation")
 
     bonus_main = st.sidebar.number_input("Bonus Main", 0.0, 20.0, 0.0)
-    bonus_comp = st.sidebar.number_input("Bonus Computer", 0.0, 20.0, 0.0)
     bonus_stat = st.sidebar.number_input("Bonus Statistics", 0.0, 20.0, 0.0)
+    bonus_comp = st.sidebar.number_input("Bonus Computer", 0.0, 20.0, 0.0)
 
-    # -------------------------------
-    # LOAD DATA
-    # -------------------------------
-    MAIN_FILE = "your_main_file.csv"
-    VAC_FILE = "your_vacancy_file.csv"
+    # ===============================
+    # FILE PATHS
+    # ===============================
+    OVERALL_FILE = "CSV - SSC CGL Mains 2025 Marks List.xlsx - in.csv"
+    STAT_FILE = "CSV - SSC CGL Mains 2025 Statistics Paper Marks List (1).csv"
+    VAC_FILE = "vacancy_data.csv"
 
-    df_main = pd.read_csv(MAIN_FILE)
+    for file in [OVERALL_FILE, STAT_FILE, VAC_FILE]:
+        if not os.path.exists(file):
+            st.error(f"❌ {file} not found in project folder.")
+            st.stop()
+
+    df_overall = pd.read_csv(OVERALL_FILE)
+    df_stat = pd.read_csv(STAT_FILE)
     df_vac = pd.read_csv(VAC_FILE)
 
-    df_main["TotalScore"] = (
-        df_main["Main Paper Marks"] +
-        df_main["Statistics Marks"]
+    # ===============================
+    # PREPARE MERIT LISTS
+    # ===============================
+    df_overall["TotalScore"] = df_overall["Main Paper Marks"]
+    df_stat["TotalScore"] = (
+        df_stat["Main Paper Marks"] +
+        df_stat["Statistics Marks"]
     )
 
-    # -------------------------------
+    # ===============================
     # APPLY BONUS
-    # -------------------------------
-    user_main = u_marks + bonus_main
+    # ===============================
+    user_main = u_main + bonus_main
     user_stat = u_stat + bonus_stat
     user_comp_final = u_comp + bonus_comp
-    user_score = user_main + user_stat
 
-    # -------------------------------
+    user_total_stat = user_main + user_stat
+    user_total_overall = user_main
+
+    # ===============================
     # RANK CALCULATION
-    # -------------------------------
-    df_sorted = df_main.sort_values(by="TotalScore", ascending=False)
+    # ===============================
+    df_overall_sorted = df_overall.sort_values("TotalScore", ascending=False)
+    df_stat_sorted = df_stat.sort_values("TotalScore", ascending=False)
 
-    overall_rank_original = (df_sorted["TotalScore"] > (u_marks + u_stat)).sum() + 1
-    overall_rank_new = (df_sorted["TotalScore"] > user_score).sum() + 1
+    overall_rank_original = (df_overall_sorted["TotalScore"] > u_main).sum() + 1
+    overall_rank_new = (df_overall_sorted["TotalScore"] > user_main).sum() + 1
 
-    df_cat = df_sorted[df_sorted["Category"] == u_cat]
+    category_df = df_overall_sorted[df_overall_sorted["Category"] == u_cat]
 
-    category_rank_original = (df_cat["TotalScore"] > (u_marks + u_stat)).sum() + 1
-    category_rank_new = (df_cat["TotalScore"] > user_score).sum() + 1
+    category_rank_original = (category_df["TotalScore"] > u_main).sum() + 1
+    category_rank_new = (category_df["TotalScore"] > user_main).sum() + 1
 
-    # -------------------------------
-    # BONUS IMPACT DISPLAY
-    # -------------------------------
-    st.subheader("📈 Bonus Impact Summary")
+    # ===============================
+    # DISPLAY RANK IMPACT
+    # ===============================
+    st.subheader("📈 Rank Impact")
 
-    colA, colB = st.columns(2)
+    col1, col2 = st.columns(2)
 
-    with colA:
-        st.metric("Original Total", round(u_marks + u_stat, 2))
+    with col1:
         st.metric("Original Overall Rank", overall_rank_original)
         st.metric("Original Category Rank", category_rank_original)
 
-    with colB:
-        st.metric("New Total", round(user_score, 2))
+    with col2:
         st.metric("New Overall Rank", overall_rank_new,
                   delta=overall_rank_original - overall_rank_new)
         st.metric("New Category Rank", category_rank_new,
@@ -141,12 +156,12 @@ elif st.session_state.page == "Predictor":
 
     st.divider()
 
-    # -------------------------------
-    # POST PREDICTION
-    # -------------------------------
+    # ===============================
+    # POST PREDICTION ENGINE
+    # ===============================
     st.subheader("🎯 Post Prediction")
 
-    predicted_post = None
+    predicted_posts = []
 
     for _, row in df_vac.iterrows():
 
@@ -154,29 +169,50 @@ elif st.session_state.page == "Predictor":
             continue
 
         required_comp = row.get("Required Computer Marks", 0)
-
         if user_comp_final < required_comp:
             continue
 
-        if user_score >= row["Cutoff"]:
-            predicted_post = row["Post"]
-            break
+        is_stat_post = row.get("Is_Stat_Post", False)
 
-    if predicted_post:
-        st.success(f"✅ Predicted Post: {predicted_post}")
+        if is_stat_post:
+            score_to_check = user_total_stat
+        else:
+            score_to_check = user_total_overall
+
+        if score_to_check >= row["Cutoff"]:
+            predicted_posts.append({
+                "Post": row["Post"],
+                "Cutoff": row["Cutoff"],
+                "Your Score Used": score_to_check,
+                "Stat Post": is_stat_post
+            })
+
+    if predicted_posts:
+        result_df = pd.DataFrame(predicted_posts)
+        st.success("✅ You are eligible for the following posts:")
+        st.dataframe(result_df, use_container_width=True)
     else:
         st.error("❌ No post predicted with current marks.")
 
-    # -------------------------------
+    st.divider()
+
+    # ===============================
     # CATEGORY CUTOFF TABLE
-    # -------------------------------
+    # ===============================
     st.subheader("📋 Category Cutoff Table")
 
     cat_df = df_vac[df_vac["Category"] == u_cat]
     st.dataframe(cat_df, use_container_width=True)
 
-    full_df = cat_df.copy()
+    # ===============================
+    # BONUS INSIGHT
+    # ===============================
+    improvement = overall_rank_original - overall_rank_new
 
+    if improvement > 0:
+        st.success(f"🚀 Bonus improved your rank by {improvement} positions!")
+    else:
+        st.info("No significant rank change from bonus.")
 
     # -------------------------------
     # PDF GENERATION
@@ -225,3 +261,4 @@ elif st.session_state.page == "Analytics":
     st.header("📈 Analytics Dashboard")
 
     st.info("Analytics features coming soon 🚀")
+
