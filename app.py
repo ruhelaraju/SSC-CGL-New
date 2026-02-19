@@ -163,29 +163,40 @@ elif st.session_state.page == "Predictor":
 
     predicted_posts = []
 
-    for _, row in df_vac.iterrows():
+for _, row in df_vac.iterrows():
 
-        if row["Category"] != u_cat:
-            continue
+    # Check if vacancy exists for selected category
+    if u_cat not in df_vac.columns:
+        st.error(f"Column {u_cat} not found in vacancy file.")
+        st.stop()
 
-        required_comp = row.get("Required Computer Marks", 0)
-        if user_comp_final < required_comp:
-            continue
+    if row[u_cat] <= 0:
+        continue
 
-        is_stat_post = row.get("Is_Stat_Post", False)
+    required_comp = row.get("Required Computer Marks", 0)
 
-        if is_stat_post:
-            score_to_check = user_total_stat
-        else:
-            score_to_check = user_total_overall
+    if user_comp_final < required_comp:
+        continue
 
-        if score_to_check >= row["Cutoff"]:
-            predicted_posts.append({
-                "Post": row["Post"],
-                "Cutoff": row["Cutoff"],
-                "Your Score Used": score_to_check,
-                "Stat Post": is_stat_post
-            })
+    is_stat_post = row.get("Is_Stat_Post", False)
+
+    if is_stat_post:
+        score_to_check = user_total_stat
+    else:
+        score_to_check = user_total_overall
+
+    # Here you must already have cutoff values in vacancy file
+    cutoff_value = row.get(f"{u_cat}_Cutoff", None)
+
+    if cutoff_value is None:
+        continue
+
+    if score_to_check >= cutoff_value:
+        predicted_posts.append({
+            "Post": row["Post"],
+            "Your Score": score_to_check,
+            "Cutoff": cutoff_value
+        })
 
     if predicted_posts:
         result_df = pd.DataFrame(predicted_posts)
@@ -261,4 +272,5 @@ elif st.session_state.page == "Analytics":
     st.header("📈 Analytics Dashboard")
 
     st.info("Analytics features coming soon 🚀")
+
 
