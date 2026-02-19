@@ -39,7 +39,7 @@ def generate_pdf(df):
         alignment=1
     )
 
-    elements.append(Paragraph("SSC CGL 2025 Category Report", title_style))
+    elements.append(Paragraph("SSC CGL 2025 Category Prediction Report", title_style))
     elements.append(Spacer(1, 12))
 
     data = [df.columns.tolist()] + df.astype(str).values.tolist()
@@ -107,10 +107,10 @@ if st.session_state.page == "Home":
     st.subheader("Welcome to SSC CGL 2025 AI Predictor")
 
     st.write("""
-    ✅ Predict your Post  
-    ✅ Check Merit Rank Impact  
-    ✅ Simulate Bonus Marks  
-    ✅ Analyze Category Cutoff  
+    ✅ Rank-based Post Prediction  
+    ✅ Merit Rank Impact Analysis  
+    ✅ Bonus Marks Simulation  
+    ✅ Vacancy-Based Real SSC Logic  
     """)
 
 
@@ -119,16 +119,16 @@ if st.session_state.page == "Home":
 # =====================================================
 elif st.session_state.page == "Predictor":
 
-    st.header("📊 AI-Based Merit & Post Predictor")
+    st.header("📊 Rank-Based SSC Post Predictor")
 
     # ---------------------------
     # USER INPUT
     # ---------------------------
     st.sidebar.header("Step 1: Your Marks")
 
-    u_main = st.sidebar.number_input("Main Paper Marks", 0.0, 390.0, 310.0)
-    u_stat = st.sidebar.number_input("Statistics Marks", 0.0, 200.0, 0.0)
-    u_comp = st.sidebar.number_input("Computer Marks", 0.0, 60.0, 25.0)
+    u_main = st.sidebar.number_input("Main Paper Marks", 0.0, 390.0, 321.0)
+    u_stat = st.sidebar.number_input("Statistics Marks", 0.0, 200.0, 96.5)
+    u_comp = st.sidebar.number_input("Computer Marks", 0.0, 60.0, 16.0)
     u_cat = st.sidebar.selectbox("Category", ["UR", "OBC", "EWS", "SC", "ST"])
 
     st.sidebar.markdown("### 🎯 Bonus Simulation")
@@ -172,108 +172,87 @@ elif st.session_state.page == "Predictor":
     # RANK CALCULATION
     # ---------------------------
     df_overall_sorted = df_overall.sort_values("TotalScore", ascending=False)
+    df_stat_sorted = df_stat.sort_values("TotalScore", ascending=False)
 
-    overall_rank_original = (df_overall_sorted["TotalScore"] > u_main).sum() + 1
     overall_rank_new = (df_overall_sorted["TotalScore"] > user_main).sum() + 1
+    stat_rank_new = (df_stat_sorted["TotalScore"] > user_total_stat).sum() + 1
 
     category_df = df_overall_sorted[df_overall_sorted["Category"] == u_cat]
-
-    category_rank_original = (category_df["TotalScore"] > u_main).sum() + 1
     category_rank_new = (category_df["TotalScore"] > user_main).sum() + 1
 
     # ---------------------------
-    # DISPLAY RANK IMPACT
+    # DISPLAY RANK
     # ---------------------------
-    st.subheader("📈 Rank Impact")
+    st.subheader("📈 Your Estimated Rank")
 
     col1, col2 = st.columns(2)
 
     with col1:
-        st.metric("Original Overall Rank", overall_rank_original)
-        st.metric("Original Category Rank", category_rank_original)
+        st.metric("Overall Rank (All India)", overall_rank_new)
+        st.metric("Category Rank", category_rank_new)
 
     with col2:
-        st.metric("New Overall Rank", overall_rank_new,
-                  delta=overall_rank_original - overall_rank_new)
-        st.metric("New Category Rank", category_rank_new,
-                  delta=category_rank_original - category_rank_new)
+        st.metric("Statistics Rank (if applicable)", stat_rank_new)
 
     st.divider()
 
     # ---------------------------
-    # POST PREDICTION
+    # RANK-BASED POST PREDICTION
     # ---------------------------
-    st.subheader("🎯 Post Prediction")
+    st.subheader("🎯 Predicted Posts (Based on Rank & Vacancies)")
 
     predicted_posts = []
 
-    if u_cat not in df_vac.columns:
-        st.error(f"❌ Column '{u_cat}' not found in vacancy file.")
-        st.stop()
-
     for _, row in df_vac.iterrows():
 
-        if row[u_cat] <= 0:
+        vacancy_count = row.get(u_cat, 0)
+
+        if vacancy_count <= 0:
             continue
 
-        required_comp = row.get("Required Computer Marks", 0)
+        is_stat_post = str(row.get("Is_Stat_Post", "")).strip().lower() in ["true", "yes", "1"]
 
-        if user_comp_final < required_comp:
-            continue
+        if is_stat_post:
+            user_rank = stat_rank_new
+        else:
+            user_rank = category_rank_new
 
-        is_stat_post = row.get("Is_Stat_Post", False)
+        if user_rank <= vacancy_count:
 
-        score_to_check = user_total_stat if is_stat_post else user_total_overall
-
-        cutoff_column = f"{u_cat}_Cutoff"
-
-        if cutoff_column not in df_vac.columns:
-            continue
-
-        cutoff_value = row.get(cutoff_column)
-
-        if pd.isna(cutoff_value):
-            continue
-
-        if score_to_check >= cutoff_value:
             predicted_posts.append({
-                "Post": row["Post"],
-                "Your Score": score_to_check,
-                "Cutoff": cutoff_value
+                "Department": row["Name of Department/ Ministry"],
+                "Post Name": row["Post Name"],
+                "Your Rank": user_rank,
+                f"{u_cat} Vacancies": vacancy_count,
+                "Post Type": "Statistics Post" if is_stat_post else "Normal Post"
             })
 
     # ---------------------------
     # SHOW RESULTS
     # ---------------------------
     if predicted_posts:
+
         result_df = pd.DataFrame(predicted_posts)
 
-        st.success("✅ You are eligible for the following posts:")
+        st.success("✅ Based on your rank, you are eligible for the following posts:")
         st.dataframe(result_df, use_container_width=True)
 
         pdf_file = generate_pdf(result_df)
 
         st.download_button(
-            label="⬇️ Download Category Report PDF",
+            label="⬇️ Download Prediction Report (PDF)",
             data=pdf_file,
-            file_name="SSC_CGL_2025_Report.pdf",
+            file_name="SSC_CGL_2025_Prediction_Report.pdf",
             mime="application/pdf"
         )
 
     else:
-        st.error("❌ No post predicted with current marks.")
+        st.warning("⚠️ Your rank exceeds available vacancies in all posts.")
 
     st.divider()
 
-    st.subheader("📋 Category Cutoff Table")
+    st.subheader("📋 Full Vacancy Table")
     st.dataframe(df_vac, use_container_width=True)
-
-    improvement = overall_rank_original - overall_rank_new
-
-    if improvement > 0:
-        st.success(f"🚀 Bonus improved your rank by {improvement} positions!")
-    else:
-        st.info("No significant rank change from bonus.")
 
 
 # =====================================================
@@ -281,13 +260,6 @@ elif st.session_state.page == "Predictor":
 # =====================================================
 elif st.session_state.page == "Analytics":
 
-    st.header("📈 Analytics Dashboard")
+    st.header("📈 Advanced Analytics (Coming Soon)")
 
-    st.info("Analytics section coming soon 🚀")
-
-
-
-
-
-
-
+    st.info("Future upgrades will include probability modeling, cutoff simulation & AI allocation engine.")
