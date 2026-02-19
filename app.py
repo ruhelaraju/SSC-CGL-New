@@ -42,117 +42,140 @@ st.divider()
 # =====================================================
 # ================== PREDICTOR PAGE ===================
 # =====================================================
-import streamlit as st
-import pandas as pd
-from core.engine import (
-    load_and_clean_data,
-    load_stat_data,
-    get_full_vacancy_list,
-    generate_pdf
-)
+elif st.session_state.page == "Predictor":
 
-st.title("📊 Full Post-wise Cutoff Table + Your Prediction")
+    st.header("📊 AI-Based Merit & Post Predictor")
 
-st.sidebar.header("Step 1: Your Profile")
-u_marks = st.sidebar.number_input("Main Paper Marks", 0.0, 390.0, 310.0)
-u_stat = st.sidebar.number_input("Statistics Marks", 0.0, 200.0, 0.0)
-u_cat = st.sidebar.selectbox("Category", ["UR", "OBC", "EWS", "SC", "ST"])
-u_comp = st.sidebar.number_input("Computer Marks", 0.0, 60.0, 25.0)
+    # ===============================
+    # STEP 1: USER INPUT
+    # ===============================
+    st.sidebar.header("Step 1: Your Marks")
 
-MAIN_FILE = "CSV - SSC CGL Mains 2025 Marks List.xlsx - in.csv"
-STAT_FILE = "CSV - SSC CGL Mains 2025 Statistics Paper Marks List (1).csv"
+    u_marks = st.sidebar.number_input("Main Paper Marks", 0.0, 390.0, 310.0)
+    u_stat = st.sidebar.number_input("Statistics Marks (if applicable)", 0.0, 200.0, 0.0)
+    u_comp = st.sidebar.number_input("Computer Marks", 0.0, 60.0, 25.0)
+    u_cat = st.sidebar.selectbox("Category", ["UR", "OBC", "EWS", "SC", "ST"])
 
-df_main, main_key = load_and_clean_data(MAIN_FILE)
-df_stat, stat_key = load_stat_data(STAT_FILE)
+    st.sidebar.markdown("### 🎯 Bonus Simulation")
 
-if df_main is None:
-    st.error(f"File '{MAIN_FILE}' not found!")
-    st.stop()
+    bonus_main = st.sidebar.number_input("Bonus in Main Paper", 0.0, 20.0, 0.0)
+    bonus_comp = st.sidebar.number_input("Bonus in Computer", 0.0, 20.0, 0.0)
+    bonus_stat = st.sidebar.number_input("Bonus in Statistics", 0.0, 20.0, 0.0)
 
-if df_stat is not None:
-    df_final = pd.merge(df_main, df_stat, left_on=main_key, right_on=stat_key, how='left').fillna(0)
-    df_final['Total_Stat_Marks'] = df_final['Main Paper Marks'] + df_final['Stat Marks']
-else:
-    df_final = df_main.copy()
-    df_final['Total_Stat_Marks'] = df_final['Main Paper Marks']
+    # ===============================
+    # LOAD DATA
+    # ===============================
+    MAIN_FILE = "your_main_file.csv"
+    VAC_FILE = "your_vacancy_file.csv"
 
-cutoffs_rules = {'UR': (18, 27), 'OBC': (15, 24), 'EWS': (15, 24), 'SC': (12, 21), 'ST': (12, 21)}
-u_b_min, u_c_min = cutoffs_rules.get(u_cat, (12, 21))
+    df_main = pd.read_csv(MAIN_FILE)
+    df_vac = pd.read_csv(VAC_FILE)
 
-# --- VACANCY DATAFRAME ---
-posts = get_full_vacancy_list()
-posts_df = pd.DataFrame(posts, columns=[
-    'Level', 'Post', 'UR', 'SC', 'ST', 'OBC', 'EWS', 'Total', 'IsCPT', 'IsStat'
-])
-pay_level_order = {"L-7": 7, "L-6": 6, "L-5": 5, "L-4": 4}
-posts_df['PayLevelNum'] = posts_df['Level'].map(pay_level_order)
-posts_df = posts_df.sort_values(by='PayLevelNum', ascending=False)
+    # Ensure proper column names exist:
+    # df_main must contain:
+    # 'Main Paper Marks', 'Statistics Marks', 'Computer Marks', 'Category'
 
-# --- GLOBAL POOL SORTED ---
-df_final['TotalScore'] = df_final['Total_Stat_Marks']
-global_pool = df_final.sort_values(by='TotalScore', ascending=False).copy()
+    df_main["TotalScore"] = (
+        df_main["Main Paper Marks"] +
+        df_main["Statistics Marks"]
+    )
 
-# --- FULL CATEGORY CUTOFF TABLE + USER PREDICTION ---
-display_full = []
-allocated_indices_full = set()
+    # ===============================
+    # APPLY BONUS TO USER
+    # ===============================
+    user_main = u_marks + bonus_main
+    user_stat = u_stat + bonus_stat
+    user_comp_final = u_comp + bonus_comp
 
-for _, row in posts_df.iterrows():
-    lvl = row['Level']
-    name = row['Post']
-    ur_v, sc_v, st_v, obc_v, ews_v = row['UR'], row['SC'], row['ST'], row['OBC'], row['EWS']
-    is_cpt, is_stat = row['IsCPT'], row['IsStat']
+    user_score = user_main + user_stat
 
-    pool = global_pool[~global_pool.index.isin(allocated_indices_full)]
-    score_col = 'Total_Stat_Marks' if is_stat else 'Main Paper Marks'
-    user_score = (u_marks + u_stat) if is_stat else u_marks
+    # ===============================
+    # MERIT RANK CALCULATION
+    # ===============================
+    df_sorted = df_main.sort_values(by="TotalScore", ascending=False).reset_index(drop=True)
 
-    ur_candidates = pool.head(ur_v)
-    ur_cut = ur_candidates[score_col].min() if not ur_candidates.empty else 0
-    allocated_indices_full.update(ur_candidates.index)
+    overall_rank_original = (df_sorted["TotalScore"] > (u_marks + u_stat)).sum() + 1
+    overall_rank_new = (df_sorted["TotalScore"] > user_score).sum() + 1
 
-    cat_v_map = {'SC': st_v, 'ST': st_v, 'OBC': obc_v, 'EWS': ews_v}
-    cat_cutoffs = {}
-    user_cat_cut = 0
-    for cat, vac in cat_v_map.items():
-        if vac == 0:
-            cat_cutoffs[cat] = "N/A"
+    df_cat = df_sorted[df_sorted["Category"] == u_cat]
+
+    category_rank_original = (df_cat["TotalScore"] > (u_marks + u_stat)).sum() + 1
+    category_rank_new = (df_cat["TotalScore"] > user_score).sum() + 1
+
+    # ===============================
+    # BONUS IMPACT SUMMARY
+    # ===============================
+    st.subheader("📈 Bonus Impact Summary")
+
+    colA, colB = st.columns(2)
+
+    with colA:
+        st.metric("Original Total Score", round(u_marks + u_stat, 2))
+        st.metric("Original Overall Rank", overall_rank_original)
+        st.metric("Original Category Rank", category_rank_original)
+
+    with colB:
+        st.metric("New Total Score", round(user_score, 2))
+        st.metric("New Overall Rank", overall_rank_new,
+                  delta=overall_rank_original - overall_rank_new)
+        st.metric("New Category Rank", category_rank_new,
+                  delta=category_rank_original - category_rank_new)
+
+    st.divider()
+
+    # ===============================
+    # POST ALLOCATION SIMULATION
+    # ===============================
+    st.subheader("🎯 Post Allocation Prediction")
+
+    predicted_post = None
+    predicted_cutoff = None
+    eligible = False
+
+    for _, row in df_vac.iterrows():
+
+        post_name = row["Post"]
+        post_category = row["Category"]
+        post_cutoff = row["Cutoff"]
+        required_comp = row.get("Required Computer Marks", 0)
+
+        if post_category != u_cat:
             continue
-        cat_pool = pool[~pool.index.isin(ur_candidates.index)]
-        cat_pool = cat_pool[cat_pool['Category'] == cat].sort_values(by=score_col, ascending=False).head(vac)
-        cat_cut = cat_pool[score_col].min() if not cat_pool.empty else 0
-        cat_cutoffs[cat] = cat_cut if cat_cut > 0 else "N/A"
-        allocated_indices_full.update(cat_pool.index)
-        if cat == u_cat:
-            user_cat_cut = cat_cut
 
-    req_comp = u_c_min if is_cpt else u_b_min
-    if u_comp < req_comp:
-        chance = "❌ FAIL (Comp)"
-    elif is_stat and u_stat == 0:
-        chance = "⚠️ Stat Paper Absent"
-    elif user_score >= ur_cut and ur_cut > 0:
-        chance = "⭐ HIGH (UR Merit)"
-    elif user_score >= user_cat_cut and user_cat_cut > 0:
-        chance = "✅ HIGH CHANCE"
+        # CPT check
+        if user_comp_final < required_comp:
+            continue
+
+        # Merit check
+        if user_score >= post_cutoff:
+            predicted_post = post_name
+            predicted_cutoff = post_cutoff
+            eligible = True
+            break
+
+    if eligible:
+        st.success(f"✅ Predicted Post: **{predicted_post}**")
+        st.info(f"Post Cutoff: {predicted_cutoff}")
     else:
-        chance = "📉 LOW CHANCE"
+        st.error("❌ Based on current bonus, no post predicted.")
 
-    display_full.append({
-        "Pay Level": lvl,
-        "Post": name,
-        "UR Cutoff": ur_cut if ur_cut > 0 else "N/A",
-        "SC Cutoff": cat_cutoffs.get('SC', "N/A"),
-        "ST Cutoff": cat_cutoffs.get('ST', "N/A"),
-        "OBC Cutoff": cat_cutoffs.get('OBC', "N/A"),
-        "EWS Cutoff": cat_cutoffs.get('EWS', "N/A"),
-        f"{u_cat} Prediction": chance
-    })
-    
-full_df = pd.DataFrame(display_full)
-full_df['PayLevelNum'] = full_df['Pay Level'].map(pay_level_order)
-full_df = full_df.sort_values(['PayLevelNum', 'Post'], ascending=[False, True])
+    # ===============================
+    # CATEGORY-WISE CUTOFF TABLE
+    # ===============================
+    st.subheader("📋 Category-wise Cutoff Overview")
 
-st.subheader("📊 Full Post-wise Cutoff Table + Your Prediction")
+    cat_df = df_vac[df_vac["Category"] == u_cat]
+    st.dataframe(cat_df[["Post", "Cutoff"]])
+
+    # ===============================
+    # FINAL INSIGHT
+    # ===============================
+    improvement = overall_rank_original - overall_rank_new
+
+    if improvement > 0:
+        st.success(f"🚀 Bonus improved your overall rank by {improvement} positions!")
+    else:
+        st.info("No significant rank improvement from bonus.")
 
 # At the end:
 
@@ -218,6 +241,7 @@ st.download_button(
 # =====================================================
 # ================== ANALYTICS PAGE ===================
 # =====================================================
+
 
 
 
