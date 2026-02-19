@@ -17,6 +17,27 @@ from reportlab.pdfbase import pdfmetrics
 
 
 # =====================================================
+# DATA CLEANING FUNCTION  ✅ ADDED
+# =====================================================
+def clean_vacancy_data(df):
+
+    df.columns = df.columns.str.strip()
+
+    # Remove newline characters & extra spaces
+    for col in df.columns:
+        if df[col].dtype == "object":
+            df[col] = df[col].astype(str).str.replace("\n", " ", regex=False).str.strip()
+
+    # Convert vacancy columns to numeric
+    vacancy_cols = ["UR", "SC", "ST", "OBC", "EWS", "Total"]
+    for col in vacancy_cols:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0).astype(int)
+
+    return df
+
+
+# =====================================================
 # PDF GENERATION FUNCTION
 # =====================================================
 def generate_pdf(df):
@@ -153,6 +174,9 @@ elif st.session_state.page == "Predictor":
     df_stat = pd.read_csv(STAT_FILE)
     df_vac = pd.read_csv(VAC_FILE)
 
+    # ✅ CLEAN VACANCY DATA
+    df_vac = clean_vacancy_data(df_vac)
+
     # ---------------------------
     # PREPARE DATA
     # ---------------------------
@@ -163,10 +187,7 @@ elif st.session_state.page == "Predictor":
 
     user_main = u_main + bonus_main
     user_stat = u_stat + bonus_stat
-    user_comp_final = u_comp + bonus_comp
-
     user_total_stat = user_main + user_stat
-    user_total_overall = user_main
 
     # ---------------------------
     # RANK CALCULATION
@@ -197,7 +218,7 @@ elif st.session_state.page == "Predictor":
     st.divider()
 
     # ---------------------------
-    # RANK-BASED POST PREDICTION
+    # POST PREDICTION
     # ---------------------------
     st.subheader("🎯 Predicted Posts (Based on Rank & Vacancies)")
 
@@ -212,11 +233,9 @@ elif st.session_state.page == "Predictor":
 
         is_stat_post = str(row.get("Is_Stat_Post", "")).strip().lower() in ["true", "yes", "1"]
 
-        if is_stat_post:
-            user_rank = stat_rank_new
-        else:
-            user_rank = category_rank_new
+        user_rank = stat_rank_new if is_stat_post else category_rank_new
 
+        # ✅ Correct comparison logic
         if user_rank <= vacancy_count:
 
             predicted_posts.append({
@@ -261,5 +280,4 @@ elif st.session_state.page == "Predictor":
 elif st.session_state.page == "Analytics":
 
     st.header("📈 Advanced Analytics (Coming Soon)")
-
     st.info("Future upgrades will include probability modeling, cutoff simulation & AI allocation engine.")
