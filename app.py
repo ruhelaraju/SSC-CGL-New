@@ -237,15 +237,20 @@ elif st.session_state.page == "Predictor":
 
         # ✅ Correct comparison logic
         
-        if user_rank <= vacancy_count:
+        department_col = "Department"  # define column name
+post_col = "Post Name"         # define column name
 
+with open("SSC_CGL_Marks.csv", newline='') as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        if user_rank <= vacancy_count:
             predicted_posts.append({
-            "Department": row.get(department_col, "N/A"),
-            "Post Name": row.get(post_col, "N/A"),
-            "Your Rank": user_rank,
-            f"{u_cat} Vacancies": vacancy_count,
-            "Post Type": "Statistics Post" if is_stat_post else "Normal Post"
-        })
+                "Department": row.get(department_col, "N/A"),
+                "Post Name": row.get(post_col, "N/A"),
+                "Your Rank": user_rank,
+                f"{u_cat} Vacancies": vacancy_count,
+                "Post Type": "Statistics Post" if is_stat_post else "Normal Post"
+            })
 
     # ---------------------------
     # SHOW RESULTS
@@ -282,6 +287,7 @@ elif st.session_state.page == "Analytics":
 
     st.header("📈 Advanced Analytics (Coming Soon)")
     st.info("Future upgrades will include probability modeling, cutoff simulation & AI allocation engine.")
+
 
 
 
