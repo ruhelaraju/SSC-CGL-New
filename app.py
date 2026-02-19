@@ -267,10 +267,6 @@ for _, row in df_vac.iterrows():
 # =====================================================
 # ================== ANALYTICS PAGE ===================
 # =====================================================
-elif st.session_state.page == "Analytics":
 
-    st.header("📈 Analytics Dashboard")
-
-    st.info("Analytics features coming soon 🚀")
 
 
