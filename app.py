@@ -7,71 +7,109 @@ from engine import (
     generate_pdf
 )
 
-st.set_page_config(layout="wide")
-
 # ---------------- NAVIGATION STATE ----------------
+import streamlit as st
+
+st.set_page_config(
+    page_title="SSC CGL 2025 Portal",
+    page_icon="🇮🇳",
+    layout="wide"
+)
+
 # ---------------- PAGE STATE ----------------
 if "page" not in st.session_state:
     st.session_state.page = "Home"
 
-# ---------------- NAVIGATION FUNCTION ----------------
-def nav_button(label, page_name):
-    active_class = "active" if st.session_state.page == page_name else ""
-    return f"""
-        <a href='/?page={page_name}' target='_self'>
-            <div class='nav-item {active_class}'>{label}</div>
-        </a>
-    """
-
-# Detect URL change
-query_params = st.query_params
-if "page" in query_params:
-    st.session_state.page = query_params["page"]
-
-# ---------------- NAVBAR HTML ----------------
+# ---------------- NAVBAR CSS ----------------
 st.markdown("""
 <style>
-.navbar {
+
+/* Header */
+.gov-header {
+    background-color: #0B3D91;
+    padding: 15px;
+    color: white;
+    font-size: 26px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Navbar container */
+.nav-container {
     display: flex;
     justify-content: center;
-    background-color: #f1f1f1;
-    padding: 12px;
-    gap: 30px;
+    gap: 15px;
+    background-color: #f5f7fa;
+    padding: 10px;
     border-bottom: 3px solid #0B3D91;
 }
 
-.nav-item {
-    padding: 10px 20px;
-    font-size: 18px;
+/* Base button */
+div.stButton > button {
+    font-size: 17px;
+    padding: 8px 18px;
     border-radius: 6px;
-    text-decoration: none;
+    border: none;
+    background-color: #e6e6e6;
     color: black;
     transition: 0.3s;
 }
 
-.nav-item:hover {
+/* Hover */
+div.stButton > button:hover {
     background-color: #FF9933;
     color: white;
 }
 
-.active {
-    background-color: #0B3D91;
+/* Active button */
+.active-btn button {
+    background-color: #0B3D91 !important;
     color: white !important;
-    font-weight: bold;
+    font-weight: bold !important;
 }
+
 </style>
 """, unsafe_allow_html=True)
 
+# ---------------- HEADER ----------------
 st.markdown(
-    f"""
-    <div class="navbar">
-        {nav_button("🏠 Home", "Home")}
-        {nav_button("📊 Cutoff Predictor", "Predictor")}
-        {nav_button("📈 Analytics", "Analytics")}
-    </div>
-    """,
+    '<div class="gov-header">🇮🇳 SSC CGL 2025 Cutoff Portal</div>',
     unsafe_allow_html=True
 )
+
+# ---------------- NAVBAR ----------------
+nav1, nav2, nav3 = st.columns(3)
+
+with nav1:
+    btn_home = st.button("🏠 Home", use_container_width=True)
+
+with nav2:
+    btn_pred = st.button("📊 Cutoff Predictor", use_container_width=True)
+
+with nav3:
+    btn_analytics = st.button("📈 Analytics", use_container_width=True)
+
+# ---------------- BUTTON LOGIC ----------------
+if btn_home:
+    st.session_state.page = "Home"
+
+if btn_pred:
+    st.session_state.page = "Predictor"
+
+if btn_analytics:
+    st.session_state.page = "Analytics"
+
+# ---------------- ACTIVE HIGHLIGHT ----------------
+if st.session_state.page == "Home":
+    nav1.markdown('<div class="active-btn"></div>', unsafe_allow_html=True)
+
+elif st.session_state.page == "Predictor":
+    nav2.markdown('<div class="active-btn"></div>', unsafe_allow_html=True)
+
+elif st.session_state.page == "Analytics":
+    nav3.markdown('<div class="active-btn"></div>', unsafe_allow_html=True)
+
+st.divider()
 # =====================================================
 # ================== HOME PAGE ========================
 # =====================================================
@@ -183,6 +221,7 @@ elif st.session_state.page == "Predictor":
 elif st.session_state.page == "Analytics":
     st.title("📈 Analytics Dashboard")
     st.write("Analytics section coming soon.")
+
 
 
 
