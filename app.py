@@ -230,7 +230,7 @@ elif st.session_state.page == "Predictor":
         vacancy_count = row[u_cat] if u_cat in row else 0
 
     if vacancy_count <= 0:
-        continue
+    continue
 
     is_stat_post = str(row.get("Is_Stat_Post", "")).strip().lower() in ["true", "yes", "1"]
     user_rank = stat_rank_new if is_stat_post else category_rank_new
@@ -275,6 +275,7 @@ elif st.session_state.page == "Predictor":
 # =====================================================
 # ANALYTICS PAGE
 # =====================================================
+
 
 
 
