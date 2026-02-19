@@ -240,7 +240,7 @@ elif st.session_state.page == "Predictor":
         department_col = "Department"  # define column name
 post_col = "Post Name"         # define column name
 
-with open("SSC_CGL_Marks.csv", newline='') as f:
+with open("vacancy_data.csv", newline='') as f:
     reader = csv.DictReader(f)
     for row in reader:
         if user_rank <= vacancy_count:
@@ -283,6 +283,7 @@ with open("SSC_CGL_Marks.csv", newline='') as f:
 # =====================================================
 # ANALYTICS PAGE
 # =====================================================
+
 
 
 
