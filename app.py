@@ -234,31 +234,54 @@ elif st.session_state.page == "Predictor":
     # -------------------------------
     # PDF GENERATION
     # -------------------------------
-    def generate_pdf(df):
-        buffer = io.BytesIO()
+def generate_pdf(df):
 
-        doc = SimpleDocTemplate(buffer, pagesize=pagesizes.A4)
-        elements = []
+    buffer = io.BytesIO()
 
-        pdfmetrics.registerFont(UnicodeCIDFont('HYSMyeongJo-Medium'))
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=pagesizes.A4
+    )
 
-        data = [df.columns.tolist()] + df.astype(str).values.tolist()
+    elements = []
 
-        table = Table(data, repeatRows=1)
+    # Register Korean-safe font (also works for English)
+    pdfmetrics.registerFont(UnicodeCIDFont('HYSMyeongJo-Medium'))
 
-        table.setStyle(TableStyle([
-            ('FONTNAME', (0,0), (-1,-1), 'HYSMyeongJo-Medium'),
-            ('FONTSIZE', (0,0), (-1,-1), 7),
-            ('BACKGROUND', (0,0), (-1,0), colors.lightgrey),
-            ('GRID', (0,0), (-1,-1), 0.5, colors.grey),
-            ('ALIGN', (0,0), (-1,-1), 'CENTER')
-        ]))
+    title_style = ParagraphStyle(
+        name="TitleStyle",
+        fontName="HYSMyeongJo-Medium",
+        fontSize=14,
+        alignment=1  # Center
+    )
 
-        elements.append(table)
-        doc.build(elements)
+    elements.append(Paragraph("SSC CGL 2025 Category Report", title_style))
+    elements.append(Spacer(1, 12))
 
-        buffer.seek(0)
-        return buffer
+    # Convert dataframe to string
+    data = [df.columns.tolist()] + df.astype(str).values.tolist()
+
+    # Auto column width
+    col_widths = [None] * len(df.columns)
+
+    table = Table(data, repeatRows=1, colWidths=col_widths)
+
+    table.setStyle(TableStyle([
+        ('FONTNAME', (0, 0), (-1, -1), 'HYSMyeongJo-Medium'),
+        ('FONTSIZE', (0, 0), (-1, -1), 7),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+    ]))
+
+    elements.append(table)
+
+    doc.build(elements)
+
+    buffer.seek(0)
+    return buffer
+    if not full_df.empty:
 
     pdf_file = generate_pdf(full_df)
 
@@ -270,9 +293,11 @@ elif st.session_state.page == "Predictor":
     )
 
 
+
 # =====================================================
 # ================== ANALYTICS PAGE ===================
 # =====================================================
+
 
 
 
