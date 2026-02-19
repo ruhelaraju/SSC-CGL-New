@@ -10,25 +10,68 @@ from engine import (
 st.set_page_config(layout="wide")
 
 # ---------------- NAVIGATION STATE ----------------
+# ---------------- PAGE STATE ----------------
 if "page" not in st.session_state:
     st.session_state.page = "Home"
 
-nav1, nav2, nav3 = st.columns(3)
+# ---------------- NAVIGATION FUNCTION ----------------
+def nav_button(label, page_name):
+    active_class = "active" if st.session_state.page == page_name else ""
+    return f"""
+        <a href='/?page={page_name}' target='_self'>
+            <div class='nav-item {active_class}'>{label}</div>
+        </a>
+    """
 
-with nav1:
-    if st.button("🏠 Home", use_container_width=True):
-        st.session_state.page = "Home"
+# Detect URL change
+query_params = st.query_params
+if "page" in query_params:
+    st.session_state.page = query_params["page"]
 
-with nav2:
-    if st.button("📊 Cutoff Predictor", use_container_width=True):
-        st.session_state.page = "Predictor"
+# ---------------- NAVBAR HTML ----------------
+st.markdown("""
+<style>
+.navbar {
+    display: flex;
+    justify-content: center;
+    background-color: #f1f1f1;
+    padding: 12px;
+    gap: 30px;
+    border-bottom: 3px solid #0B3D91;
+}
 
-with nav3:
-    if st.button("📈 Analytics", use_container_width=True):
-        st.session_state.page = "Analytics"
+.nav-item {
+    padding: 10px 20px;
+    font-size: 18px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: black;
+    transition: 0.3s;
+}
 
-st.divider()
+.nav-item:hover {
+    background-color: #FF9933;
+    color: white;
+}
 
+.active {
+    background-color: #0B3D91;
+    color: white !important;
+    font-weight: bold;
+}
+</style>
+""", unsafe_allow_html=True)
+
+st.markdown(
+    f"""
+    <div class="navbar">
+        {nav_button("🏠 Home", "Home")}
+        {nav_button("📊 Cutoff Predictor", "Predictor")}
+        {nav_button("📈 Analytics", "Analytics")}
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 # =====================================================
 # ================== HOME PAGE ========================
 # =====================================================
@@ -140,6 +183,7 @@ elif st.session_state.page == "Predictor":
 elif st.session_state.page == "Analytics":
     st.title("📈 Analytics Dashboard")
     st.write("Analytics section coming soon.")
+
 
 
 
