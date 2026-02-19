@@ -23,7 +23,7 @@ with nav3:
         st.session_state.page = "Analytics"
 
 st.divider()
-elif st.session_state.page == "Predictor":
+    elif st.session_state.page == "Predictor":
     st.title("📊 Full Post-wise Cutoff Table + Your Prediction")
 
 st.sidebar.header("Step 1: Your Profile")
@@ -188,5 +188,6 @@ st.download_button(
     file_name="SSC_CGL_2025_Cutoff_Report.pdf",
     mime="application/pdf"
 )
+
 
 
