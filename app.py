@@ -238,7 +238,7 @@ elif st.session_state.page == "Predictor":
 
         # ✅ Correct comparison logic
         
-       department_col = "Department"
+department_col = "Department"
 post_col = "Post Name"
 
 predicted_posts = []
@@ -291,6 +291,7 @@ for _, row in df_vac.iterrows():
 # =====================================================
 # ANALYTICS PAGE
 # =====================================================
+
 
 
 
