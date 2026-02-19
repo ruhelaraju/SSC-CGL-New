@@ -236,18 +236,16 @@ elif st.session_state.page == "Predictor":
         user_rank = stat_rank_new if is_stat_post else category_rank_new
 
         # ✅ Correct comparison logic
+        
         if user_rank <= vacancy_count:
 
-            predicted_posts.append({
-                department_col = [col for col in df_vac.columns if "Department" in col][0]
-                post_col = [col for col in df_vac.columns if "Post" in col and "Name" in col][0]
-
-                "Department": row.get(department_col, "N/A"),
-                "Post Name": row.get(post_col, "N/A"),
-                "Your Rank": user_rank,
-                f"{u_cat} Vacancies": vacancy_count,
-                "Post Type": "Statistics Post" if is_stat_post else "Normal Post"
-            })
+        predicted_posts.append({
+            "Department": row.get(department_col, "N/A"),
+            "Post Name": row.get(post_col, "N/A"),
+            "Your Rank": user_rank,
+            f"{u_cat} Vacancies": vacancy_count,
+            "Post Type": "Statistics Post" if is_stat_post else "Normal Post"
+        })
 
     # ---------------------------
     # SHOW RESULTS
@@ -284,4 +282,5 @@ elif st.session_state.page == "Analytics":
 
     st.header("📈 Advanced Analytics (Coming Soon)")
     st.info("Future upgrades will include probability modeling, cutoff simulation & AI allocation engine.")
+
 
