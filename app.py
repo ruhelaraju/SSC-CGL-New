@@ -238,20 +238,27 @@ elif st.session_state.page == "Predictor":
 
         # ✅ Correct comparison logic
         
-        department_col = "Department"  # define column name
-post_col = "Post Name"         # define column name
+       department_col = "Department"
+post_col = "Post Name"
 
-with open("vacancy_data.csv", newline='') as f:
-    reader = csv.DictReader(f)
-    for row in reader:
-        if user_rank <= vacancy_count:
-            predicted_posts.append({
-                "Department": row.get(department_col, "N/A"),
-                "Post Name": row.get(post_col, "N/A"),
-                "Your Rank": user_rank,
-                f"{u_cat} Vacancies": vacancy_count,
-                "Post Type": "Statistics Post" if is_stat_post else "Normal Post"
-            })
+predicted_posts = []
+
+for _, row in df_vac.iterrows():
+    vacancy_count = row.get(u_cat, 0)
+    if vacancy_count <= 0:
+        continue
+
+    is_stat_post = str(row.get("Is_Stat_Post", "")).strip().lower() in ["true", "yes", "1"]
+    user_rank = stat_rank_new if is_stat_post else category_rank_new
+
+    if user_rank <= vacancy_count:
+        predicted_posts.append({
+            "Department": row.get(department_col, "N/A"),
+            "Post Name": row.get(post_col, "N/A"),
+            "Your Rank": user_rank,
+            f"{u_cat} Vacancies": vacancy_count,
+            "Post Type": "Statistics Post" if is_stat_post else "Normal Post"
+        })
 
     # ---------------------------
     # SHOW RESULTS
@@ -284,6 +291,7 @@ with open("vacancy_data.csv", newline='') as f:
 # =====================================================
 # ANALYTICS PAGE
 # =====================================================
+
 
 
 
