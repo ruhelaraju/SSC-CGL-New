@@ -123,7 +123,7 @@ if st.session_state.page == "Home":
 # =====================================================
 
 elif st.session_state.page == "Predictor":
-st.title("🤖 AI-Based Cutoff Prediction")
+    st.title("🤖 AI-Based Cutoff Prediction")
 
 # Load historical dataset
 hist_df = load_and_clean_data("historical_cutoff_data.csv")
@@ -241,6 +241,7 @@ if hist_df is not None:
 elif st.session_state.page == "Analytics":
     st.title("📈 Analytics Dashboard")
     st.write("Analytics section coming soon.")
+
 
 
 
