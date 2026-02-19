@@ -6,42 +6,6 @@ st.set_page_config(
 )
 
 # ==============================
-# REMOVE SIDEBAR
-# ==============================
-st.markdown("""
-<style>
-[data-testid="stSidebar"] {display: none;}
-[data-testid="collapsedControl"] {display: none;}
-
-/* Header */
-.header {
-    background-color: #0B3D91;
-    padding: 15px;
-    color: white;
-    font-size: 26px;
-    font-weight: bold;
-    text-align: center;
-}
-
-/* Navbar buttons */
-div.stButton > button {
-    font-size: 17px;
-    padding: 8px 18px;
-    border-radius: 6px;
-    border: none;
-    background-color: #e6e6e6;
-    transition: 0.3s;
-}
-
-div.stButton > button:hover {
-    background-color: #FF9933;
-    color: white;
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-# ==============================
 # HEADER
 # ==============================
 st.markdown(
@@ -254,6 +218,7 @@ st.download_button(
 # =====================================================
 # ================== ANALYTICS PAGE ===================
 # =====================================================
+
 
 
 
