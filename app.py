@@ -255,10 +255,7 @@ st.download_button(
 # ================== ANALYTICS PAGE ===================
 # =====================================================
 
-elif st.session_state.page == "Analytics":
 
-    st.header("📈 Analytics Dashboard")
-    st.write("Charts and analysis will go here.")
 
 
 
