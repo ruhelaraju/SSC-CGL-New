@@ -225,7 +225,7 @@ elif st.session_state.page == "Predictor":
 
     predicted_posts = []
 
-for _, row in df_vac.iterrows():
+    for _, row in df_vac.iterrows():
     # 1 & 2: get vacancy safely
     vacancy_count = row[u_cat] if u_cat in row else 0
 
@@ -275,6 +275,7 @@ for _, row in df_vac.iterrows():
 # =====================================================
 # ANALYTICS PAGE
 # =====================================================
+
 
 
 
