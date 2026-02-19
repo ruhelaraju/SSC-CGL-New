@@ -27,8 +27,38 @@ def load_and_clean_data(file_name):
         return pd.Series([row['Computer Marks'] >= b, row['Computer Marks'] >= c])
     df[['Pass_B', 'Pass_C']] = df.apply(get_pass_status, axis=1)
     return df, key_col
+import numpy as np
+from sklearn.ensemble import RandomForestRegressor
+import streamlit as st
 
+@st.cache_resource
+def train_cutoff_model(df):
+    """
+    Train AI model based on historical cutoff data.
+    """
 
+    # Example feature columns (modify as per your dataset)
+    feature_cols = [
+        "Vacancies",
+        "Avg_Marks",
+        "Category_Code"
+    ]
+
+    # Convert category to numeric
+    df["Category_Code"] = df["Category"].astype("category").cat.codes
+
+    X = df[feature_cols]
+    y = df["Final_Cutoff"]
+
+    model = RandomForestRegressor(
+        n_estimators=200,
+        max_depth=8,
+        random_state=42
+    )
+
+    model.fit(X, y)
+    return model
+    
 @st.cache_data
 def load_stat_data(file_name):
     if not os.path.exists(file_name): 
@@ -38,7 +68,10 @@ def load_stat_data(file_name):
     key_col = 'Roll Number' if 'Roll Number' in df.columns else df.columns[0]
     df['Stat Marks'] = pd.to_numeric(df.get('Stat Marks', df.iloc[:, -1]), errors='coerce')
     return df[[key_col, 'Stat Marks']], key_col
-
+def predict_cutoff(model, vacancies, avg_marks, category_code):
+    input_data = np.array([[vacancies, avg_marks, category_code]])
+    prediction = model.predict(input_data)
+    return round(prediction[0], 2)
 
 def get_full_vacancy_list():    
     return [
@@ -128,3 +161,4 @@ def generate_pdf(df):
 
     buffer.seek(0)
     return buffer
+
