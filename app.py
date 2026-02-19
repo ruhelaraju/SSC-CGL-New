@@ -239,7 +239,7 @@ elif st.session_state.page == "Predictor":
         
         if user_rank <= vacancy_count:
 
-        predicted_posts.append({
+            predicted_posts.append({
             "Department": row.get(department_col, "N/A"),
             "Post Name": row.get(post_col, "N/A"),
             "Your Rank": user_rank,
@@ -282,5 +282,6 @@ elif st.session_state.page == "Analytics":
 
     st.header("📈 Advanced Analytics (Coming Soon)")
     st.info("Future upgrades will include probability modeling, cutoff simulation & AI allocation engine.")
+
 
 
