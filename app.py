@@ -78,8 +78,15 @@ st.divider()
 # =====================================================
 # ================== PREDICTOR PAGE ===================
 # =====================================================
+import streamlit as st
+import pandas as pd
+from core.engine import (
+    load_and_clean_data,
+    load_stat_data,
+    get_full_vacancy_list,
+    generate_pdf
+)
 
-elif st.session_state.page == "Predictor":
 st.title("📊 Full Post-wise Cutoff Table + Your Prediction")
 
 st.sidebar.header("Step 1: Your Profile")
@@ -244,11 +251,6 @@ st.download_button(
     file_name="SSC_CGL_2025_Cutoff_Report.pdf",
     mime="application/pdf"
 )
-
-
-    st.header("📊 Full Predictor Module")
-    st.write("Your advanced allocation logic will go here.")
-
 # =====================================================
 # ================== ANALYTICS PAGE ===================
 # =====================================================
@@ -257,6 +259,7 @@ elif st.session_state.page == "Analytics":
 
     st.header("📈 Analytics Dashboard")
     st.write("Charts and analysis will go here.")
+
 
 
 
