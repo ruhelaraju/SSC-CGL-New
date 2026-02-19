@@ -6,6 +6,7 @@ from engine import (
     get_full_vacancy_list,
     generate_pdf
 )
+from engine import train_cutoff_model, predict_cutoff
 
 # ---------------- NAVIGATION STATE ----------------
 import streamlit as st
@@ -123,35 +124,41 @@ if st.session_state.page == "Home":
 # =====================================================
 
 elif st.session_state.page == "Predictor":
+
     st.title("🤖 AI-Based Cutoff Prediction")
 
-# Load historical dataset
-hist_df = load_and_clean_data("historical_cutoff_data.csv")
+    # ---------------- LOAD AI DATA ----------------
+    hist_df, _ = load_and_clean_data("historical_cutoff_data.csv")
 
-if hist_df is not None:
-    model = train_cutoff_model(hist_df)
+    if hist_df is not None:
 
-    st.subheader("Enter Current Year Data")
+        model = train_cutoff_model(hist_df)
 
-    vacancies = st.number_input("Total Vacancies", 1000, 50000, 20000)
-    avg_marks = st.number_input("Expected Average Marks", 200.0, 350.0, 280.0)
-    category = st.selectbox("Category", ["UR", "OBC", "EWS", "SC", "ST"])
+        st.subheader("AI Prediction")
 
-    category_code = ["UR", "OBC", "EWS", "SC", "ST"].index(category)
+        vacancies = st.number_input("Total Vacancies", 1000, 50000, 20000)
+        avg_marks = st.number_input("Expected Average Marks", 200.0, 350.0, 280.0)
+        category = st.selectbox("Category", ["UR", "OBC", "EWS", "SC", "ST"])
 
-    if st.button("Predict Cutoff"):
-        predicted = predict_cutoff(model, vacancies, avg_marks, category_code)
+        category_code = ["UR", "OBC", "EWS", "SC", "ST"].index(category)
 
-        st.success(f"🎯 Predicted Cutoff for {category}: {predicted}")
+        if st.button("Predict Cutoff"):
+            predicted = predict_cutoff(model, vacancies, avg_marks, category_code)
+            st.success(f"🎯 Predicted Cutoff for {category}: {predicted}")
 
+    else:
+        st.warning("Historical cutoff dataset not found.")
+
+    st.divider()
+
+    # ---------------- FULL POST TABLE ----------------
     st.title("📊 Full Post-wise Cutoff Table + Your Prediction")
 
-    # -------- USER INPUT (NOT SIDEBAR NOW) ----------
     col1, col2 = st.columns(2)
 
     with col1:
         u_marks = st.number_input("Main Paper Marks", 0.0, 390.0, 310.0)
-        u_cat = st.selectbox("Category", ["UR", "OBC", "EWS", "SC", "ST"])
+        u_cat = st.selectbox("Your Category", ["UR", "OBC", "EWS", "SC", "ST"])
 
     with col2:
         u_stat = st.number_input("Statistics Marks", 0.0, 200.0, 0.0)
@@ -175,7 +182,6 @@ if hist_df is not None:
         df_final = df_main.copy()
         df_final['Total_Stat_Marks'] = df_final['Main Paper Marks']
 
-    # -------- VACANCY DATA ----------
     posts = get_full_vacancy_list()
     posts_df = pd.DataFrame(posts, columns=[
         'Level', 'Post', 'UR', 'SC', 'ST', 'OBC', 'EWS', 'Total', 'IsCPT', 'IsStat'
@@ -188,7 +194,6 @@ if hist_df is not None:
     df_final['TotalScore'] = df_final['Total_Stat_Marks']
     global_pool = df_final.sort_values(by='TotalScore', ascending=False).copy()
 
-    # -------- CUTOFF CALCULATION ----------
     display_full = []
     allocated_indices_full = set()
 
@@ -222,9 +227,10 @@ if hist_df is not None:
     full_df['PayLevelNum'] = full_df['Pay Level'].map(pay_level_order)
     full_df = full_df.sort_values(['PayLevelNum', 'Post'], ascending=[False, True])
 
-    st.dataframe(full_df.drop(columns='PayLevelNum'), use_container_width=True, hide_index=True)
+    st.dataframe(full_df.drop(columns='PayLevelNum'),
+                 use_container_width=True,
+                 hide_index=True)
 
-    # -------- PDF DOWNLOAD ----------
     pdf_file = generate_pdf(full_df.drop(columns='PayLevelNum'))
 
     st.download_button(
@@ -233,7 +239,6 @@ if hist_df is not None:
         file_name="SSC_CGL_2025_Cutoff_Report.pdf",
         mime="application/pdf"
     )
-
 # =====================================================
 # ================== ANALYTICS PAGE ===================
 # =====================================================
@@ -241,6 +246,7 @@ if hist_df is not None:
 elif st.session_state.page == "Analytics":
     st.title("📈 Analytics Dashboard")
     st.write("Analytics section coming soon.")
+
 
 
 
