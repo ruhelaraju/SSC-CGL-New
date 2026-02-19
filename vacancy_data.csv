@@ -1,0 +1,129 @@
+S. No.,Name of Department/ Ministry,Post Name,Pay Level,Post Classification,UR,SC,ST,OBC,EWS,Total,ESM,OH,HH,VH,Other PWD,"Whether suitable for Color
+Blind?",Is_Stat_Post
+1,"Central Board of Indirect Taxes and
+Customs (CBIC), Ministry of Finance","Inspector
+(Examiner)",Level-7,"Group B (Non
+Gazetted)",68,18,24,13,14,137,0,0,2,2,2,NO,False
+2,"Central Board of Indirect Taxes and
+Customs (CBIC), Ministry of Finance","Inspector
+(Preventive Officer)",Level-7,"Group B (Non
+Gazetted)",138,75,20,91,29,353,0,4,2,4,4,NO,False
+3,"Employees Provident Fund Organisation (EPFO), Ministry of Labour & Employment","Assistant/Assistant Section Officer(ASO) with grade pay
+(4600)",Level-7,Group B (Non Gazetted),36,17,5,30,6,94,0,2,2,1,1,YES,False
+4,"Central Board of Indirect Taxes and Customs (CBIC), Ministry of Finance",Inspector (Central Excise),Level-7,Group B (Non Gazetted),611,175,82,269,169,1306,0,16,11,24,21,NO,False
+5,"Enforcement Directorate, Ministry of Finance",Assistant Enforcement Officer,Level-7,Group B (Non Gazetted),1,2,2,13,0,18,0,0,0,0,0,NO,False
+6,"National Informatics Centre, Ministry of Electronics and Information Technology","Assistant/Assistant Section Officer(ASO) with grade pay
+(4600)",Level-7,Group B (Non Gazetted),2,0,0,0,1,3,0,0,0,0,0,NO,False
+7,Central Administrative Tribunal (CAT),"Assistant/Assistant Section Officer(ASO) with grade pay
+(4600)",Level-7,Group B (Non Gazetted),0,0,0,0,1,1,0,0,0,0,0,YES,False
+8,"Central Bureau of Narcotics, Ministry
+of Finance",Inspector,Level-7,"Group B (Non
+Gazetted)",1,1,0,1,1,4,0,0,0,0,0,NO,False
+9,Ministry of External Affairs (MEA),"Assistant/Assistant Section Officer(ASO) with grade pay
+(4600)",Level-7,Group B (Non Gazetted),44,13,0,33,10,100,0,1,1,1,1,YES,False
+10,Election Commission of India,"Assistant/Assistant Section Officer(ASO) with grade pay
+(4600)",Level-7,Group B (Non Gazetted),0,0,0,5,1,6,0,0,0,0,0,YES,False
+11,Ministry of Electronics and Information Technology,"Assistant/Assistant Section Officer(ASO) with grade pay
+(4600)",Level-7,Group B (Non Gazetted),2,0,1,0,0,3,0,0,0,0,0,YES,False
+12,"Intelligence Bureau (IB), Ministry of Home Affairs","Assistant/Assistant Section Officer(ASO) with grade pay
+(4600)",Level-7,Group B (Non Gazetted),100,24,19,39,15,197,0,2,2,2,2,YES,False
+13,"Central Bureau of Investigation (CBI), Ministry of Personnel, Public
+Grievances & Pensions",Sub Inspector (CBI),Level-7,Group B (Non Gazetted),52,12,5,18,6,93,0,0,0,0,0,YES,False
+14,Ministry of Railways,"Assistant/Assistant Section Officer(ASO) with grade pay
+(4600)",Level-7,Group B (Non Gazetted),23,4,4,14,3,48,0,0,1,2,0,YES,False
+15,"Central Board of Direct Taxes, Ministry
+of Finance","Inspector Of Income
+Tax",Level-7,"Group B (Non
+Gazetted)",176,52,39,95,27,389,0,4,4,2,1,YES,False
+16,"Department of Personnel
+and Training (ASO in CSS), Ministry of Personnel, Public Grievances & Pensions",Assistant Section Officer (ASO),Level-7,Group B (Non Gazetted),273,104,52,185,68,682,0,6,7,7,7,YES,False
+17,"Central Board of Indirect Taxes and
+Customs (CBIC), Ministry of Finance",Executive Assistant,Level-6,"Group B (Non
+Gazetted)",89,24,12,40,18,183,0,1,6,4,1,YES,False
+18,"Enforcement Directorate Ministry of
+Finance, Ministry of Finance","Assistant with grade
+pay (4200)",Level-6,"Group B (Non
+Gazetted)",0,0,0,3,0,3,0,1,0,0,0,YES,False
+19,"Registrar General of India and Census
+Commissioner of India (RGI), Ministry of Home Affairs",Statistical Investigator Grade-II,Level-6,Group B (Non Gazetted),50,18,12,28,10,118,0,1,1,0,0,NO,False
+20,"Telecom Regulatory Authority of India (TRAI), Ministry of Communications",Assistant with grade pay (4200),Level-6,Group B (Non Gazetted),2,1,0,0,0,3,0,0,0,0,0,NO,False
+21,"Department of Official Language,
+Ministry of Home Affairs","Assistant with grade
+pay (4200)",Level-6,"Group B (Non
+Gazetted)",4,0,0,1,0,5,0,0,0,0,0,YES,False
+22,Ministry of Corporate Affairs,"Assistant with grade
+pay (4200)",Level-6,"Group B (Non
+Gazetted)",0,1,0,0,0,1,0,0,0,0,0,YES,False
+23,Ministry of Mines,"Assistant with grade
+pay (4200)",Level-6,"Group B (Non
+Gazetted)",11,2,2,3,4,22,0,0,0,0,0,YES,False
+24,Ministry of Textiles,"Assistant with grade
+pay (4200)",Level-6,"Group B (Non
+Gazetted)",1,0,0,0,0,1,0,0,0,0,0,YES,False
+25,"Department of Indian Coast Guard,
+Ministry of Defence","Assistant with grade
+pay (4200)",Level-6,"Group B (Non
+Gazetted)",8,3,1,5,1,18,0,1,0,0,0,NO,False
+26,"Subordinate Statistical Services Division, Ministry of Statistics &
+Programme Implementation",Junior Statistical Officer,Level-6,Group B (Non Gazetted),124,47,15,36,27,249,0,3,3,1,3,YES,True
+27,"Directorate of Forensic Science
+Services (DFSS), Ministry of Home Affairs",Assistant with grade pay (4200),Level-6,Group B (Non Gazetted),1,0,0,1,1,3,0,0,0,0,1,NO,False
+28,"Narcotics Control Bureau, Ministry of Home Affairs","Assistant/Assistant Section Officer(ASO) with grade pay
+(4600)",Level-6,Group B (Non Gazetted),7,1,1,2,0,11,0,1,1,0,1,YES,False
+29,"Narcotics Control Bureau, Ministry of
+Home Affairs","Sub-Inspector /JIO
+(NCB)",Level-6,"Group B (Non
+Gazetted)",10,3,4,8,5,30,0,0,0,0,0,NO,False
+30,"NIA, Department of Internal Security,
+Ministry of Home Affairs",Sub Inspector (NIA),Level-6,"Group B (Non
+Gazetted)",6,2,1,3,2,14,0,0,0,0,0,NO,False
+31,"Ministry of Statistics & Programme
+Implementation","Assistant with grade
+pay (4200)",Level-6,"Group B (Non
+Gazetted)",0,0,0,2,0,2,0,0,0,0,0,YES,True
+32,"Central Board of Direct Taxes (CBDT),
+Ministry of Finance","Office
+Superintendent",Level-6,"Group B (Non
+Gazetted)",2766,1012,496,1822,657,6753,0,72,71,69,67,YES,False
+33,"Comptroller & Auditor General of
+India (C&AG)","Accountant/Junior
+Accountant",Level-5,"Group C (Non
+Technical)",86,31,17,28,18,180,18,4,3,0,0,YES,False
+34,"Controller General of Defence Accounts (CGDA), Ministry of Defence",Auditor,Level-5,Group C (Non Technical),477,176,88,316,117,1174,117,11,11,11,11,YES,False
+35,"Department of Posts, Ministry of
+Communications","Accountant/Junior
+Accountant",Level-5,"Group B (Non
+Gazetted)",42,13,6,12,3,76,0,0,1,1,0,YES,False
+36,"CGCA (Controller General of Communication Accounts), Ministry of
+Communications",Accountant/Junior Accountant,Level-5,Group C (Non Technical),15,6,3,9,3,36,3,0,0,0,0,NO,False
+37,"Office of Development Commissioner, Ministry of Micro, Small and Medium Enterprises","Upper Division Clerk(UDC)/Senior Secretariat
+Assistant(SSA)",Level-4,Group C (Non Technical),25,4,5,16,5,55,6,0,1,1,0,YES,False
+38,"Central Board of Indirect Taxes and
+Customs (CBIC), Ministry of Finance",Tax Assistant,Level-4,"Group C (Non
+Technical)",256,136,82,203,94,771,63,12,11,12,14,YES,False
+39,"Department of Science and Technology, Ministry of Science & Technology","Upper Division Clerk(UDC)/Senior Secretariat
+Assistant(SSA)",Level-4,Group C (Non Technical),24,9,4,16,6,59,6,1,0,0,0,YES,False
+40,"Central Bureau of Narcotics, Ministry of Finance","Upper Division Clerk(UDC)/Senior Secretariat
+Assistant(SSA)",Level-4,Group C (Non Technical),12,2,0,5,2,21,1,1,0,0,0,YES,False
+41,"Central Bureau of Narcotics, Ministry of Finance","Sub- Inspector(Narcotics)
+- 2400",Level-4,Group C (Non Technical),11,2,0,6,0,19,1,0,0,0,0,NO,False
+42,Ministry of Mines,"Upper Division Clerk(UDC)/Senior Secretariat
+Assistant(SSA)",Level-4,Group C (Non Technical),13,2,3,4,4,26,1,0,1,0,0,YES,False
+43,"Director General Defence Estates(DGDE), Ministry of Defence","Upper Division Clerk(UDC)/Senior Secretariat
+Assistant(SSA)",Level-4,Group C (Non Technical),7,2,1,3,1,14,1,0,0,0,0,YES,False
+44,Ministry of Electronics and Information Technology,"Upper Division Clerk(UDC)/Senior Secretariat
+Assistant(SSA)",Level-4,Group C (Non Technical),5,1,1,2,1,10,0,0,0,0,0,YES,False
+45,Ministry of Textiles,"Upper Division Clerk(UDC)/Senior Secretariat
+Assistant(SSA)",Level-4,Group C (Non Technical),4,0,1,1,2,8,0,0,0,0,0,YES,False
+46,"Department of Water Resources, River Development and Ganga Rejuvenation","Upper Division Clerk(UDC)/Senior Secretariat
+Assistant(SSA)",Level-4,Group C (Non Technical),5,0,0,0,0,5,0,0,0,0,0,YES,False
+47,"Border Roads Organization (BRO), Ministry of Defence","Upper Division Clerk(UDC)/Senior Secretariat
+Assistant(SSA)",Level-4,Group C (Non Technical),20,1,0,0,4,25,4,0,1,0,0,NO,False
+48,"Department of Agriculture Coopration and Farmers Welfare, Ministry of Agriculture & Farmers Welfare","Upper Division Clerk(UDC)/Senior Secretariat
+Assistant(SSA)",Level-4,Group C (Non Technical),2,0,0,0,1,3,0,0,0,0,0,YES,False
+49,"Directorate General  of Health Services, Ministry of Health & Family Welfare","Upper Division Clerk(UDC)/Senior Secretariat
+Assistant(SSA)",Level-4,Group C (Non Technical),1,0,0,0,0,1,0,0,0,0,0,YES,False
+50,"Central Board of Direct Taxes (CBDT),
+Ministry of Finance",Tax Assistant,Level-4,"Group C (Non
+Technical)",572,171,80,340,86,1249,129,14,10,7,9,YES,False
+TOTAL,,,,,6183,2167,1088,3721,1423,14582,350,158,153,151,146,,False
