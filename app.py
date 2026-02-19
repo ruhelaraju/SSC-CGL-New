@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 import io
+import csv
 
 from reportlab.platypus import (
     SimpleDocTemplate,
@@ -283,6 +284,7 @@ with open("vacancy_data.csv", newline='') as f:
 # =====================================================
 # ANALYTICS PAGE
 # =====================================================
+
 
 
 
