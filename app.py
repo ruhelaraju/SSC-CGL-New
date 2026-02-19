@@ -227,7 +227,7 @@ elif st.session_state.page == "Predictor":
 
     for _, row in df_vac.iterrows():
     # 1 & 2: get vacancy safely
-    vacancy_count = row[u_cat] if u_cat in row else 0
+        vacancy_count = row[u_cat] if u_cat in row else 0
 
     if vacancy_count <= 0:
         continue
@@ -275,6 +275,7 @@ elif st.session_state.page == "Predictor":
 # =====================================================
 # ANALYTICS PAGE
 # =====================================================
+
 
 
 
