@@ -123,6 +123,26 @@ if st.session_state.page == "Home":
 # =====================================================
 
 elif st.session_state.page == "Predictor":
+st.title("🤖 AI-Based Cutoff Prediction")
+
+# Load historical dataset
+hist_df = load_and_clean_data("historical_cutoff_data.csv")
+
+if hist_df is not None:
+    model = train_cutoff_model(hist_df)
+
+    st.subheader("Enter Current Year Data")
+
+    vacancies = st.number_input("Total Vacancies", 1000, 50000, 20000)
+    avg_marks = st.number_input("Expected Average Marks", 200.0, 350.0, 280.0)
+    category = st.selectbox("Category", ["UR", "OBC", "EWS", "SC", "ST"])
+
+    category_code = ["UR", "OBC", "EWS", "SC", "ST"].index(category)
+
+    if st.button("Predict Cutoff"):
+        predicted = predict_cutoff(model, vacancies, avg_marks, category_code)
+
+        st.success(f"🎯 Predicted Cutoff for {category}: {predicted}")
 
     st.title("📊 Full Post-wise Cutoff Table + Your Prediction")
 
@@ -221,6 +241,7 @@ elif st.session_state.page == "Predictor":
 elif st.session_state.page == "Analytics":
     st.title("📈 Analytics Dashboard")
     st.write("Analytics section coming soon.")
+
 
 
 
