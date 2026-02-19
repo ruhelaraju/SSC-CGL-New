@@ -163,41 +163,48 @@ elif st.session_state.page == "Predictor":
 
     predicted_posts = []
 
-for _, row in df_vac.iterrows():
-
-    # Check if vacancy exists for selected category
     if u_cat not in df_vac.columns:
-        st.error(f"Column {u_cat} not found in vacancy file.")
+        st.error(f"❌ Column '{u_cat}' not found in vacancy file.")
         st.stop()
 
-    if row[u_cat] <= 0:
-        continue
+    for _, row in df_vac.iterrows():
 
-    required_comp = row.get("Required Computer Marks", 0)
+        # Check vacancy count
+        if row[u_cat] <= 0:
+            continue
 
-    if user_comp_final < required_comp:
-        continue
+        required_comp = row.get("Required Computer Marks", 0)
 
-    is_stat_post = row.get("Is_Stat_Post", False)
+        if user_comp_final < required_comp:
+            continue
 
-    if is_stat_post:
-        score_to_check = user_total_stat
-    else:
-        score_to_check = user_total_overall
+        is_stat_post = row.get("Is_Stat_Post", False)
 
-    # Here you must already have cutoff values in vacancy file
-    cutoff_value = row.get(f"{u_cat}_Cutoff", None)
+        if is_stat_post:
+            score_to_check = user_total_stat
+        else:
+            score_to_check = user_total_overall
 
-    if cutoff_value is None:
-        continue
+        cutoff_column = f"{u_cat}_Cutoff"
 
-    if score_to_check >= cutoff_value:
-        predicted_posts.append({
-            "Post": row["Post"],
-            "Your Score": score_to_check,
-            "Cutoff": cutoff_value
-        })
+        if cutoff_column not in df_vac.columns:
+            continue
 
+        cutoff_value = row.get(cutoff_column)
+
+        if pd.isna(cutoff_value):
+            continue
+
+        if score_to_check >= cutoff_value:
+            predicted_posts.append({
+                "Post": row["Post"],
+                "Your Score": score_to_check,
+                "Cutoff": cutoff_value
+            })
+
+    # ===============================
+    # SHOW RESULTS
+    # ===============================
     if predicted_posts:
         result_df = pd.DataFrame(predicted_posts)
         st.success("✅ You are eligible for the following posts:")
@@ -212,8 +219,7 @@ for _, row in df_vac.iterrows():
     # ===============================
     st.subheader("📋 Category Cutoff Table")
 
-    cat_df = df_vac[df_vac["Category"] == u_cat]
-    st.dataframe(cat_df, use_container_width=True)
+    st.dataframe(df_vac, use_container_width=True)
 
     # ===============================
     # BONUS INSIGHT
@@ -267,6 +273,7 @@ for _, row in df_vac.iterrows():
 # =====================================================
 # ================== ANALYTICS PAGE ===================
 # =====================================================
+
 
 
 
