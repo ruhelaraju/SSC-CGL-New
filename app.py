@@ -1,32 +1,84 @@
 import streamlit as st
 import pandas as pd
+import os
 import io
 
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Table,
+    TableStyle,
+    Paragraph,
+    Spacer
+)
 from reportlab.lib import colors, pagesizes
+from reportlab.lib.styles import ParagraphStyle
 from reportlab.pdfbase.cidfonts import UnicodeCIDFont
 from reportlab.pdfbase import pdfmetrics
 
 
-# ==============================
+# =====================================================
+# PDF GENERATION FUNCTION
+# =====================================================
+def generate_pdf(df):
+
+    buffer = io.BytesIO()
+
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=pagesizes.A4
+    )
+
+    elements = []
+
+    pdfmetrics.registerFont(UnicodeCIDFont('HYSMyeongJo-Medium'))
+
+    title_style = ParagraphStyle(
+        name="TitleStyle",
+        fontName="HYSMyeongJo-Medium",
+        fontSize=14,
+        alignment=1
+    )
+
+    elements.append(Paragraph("SSC CGL 2025 Category Report", title_style))
+    elements.append(Spacer(1, 12))
+
+    data = [df.columns.tolist()] + df.astype(str).values.tolist()
+
+    table = Table(data, repeatRows=1)
+
+    table.setStyle(TableStyle([
+        ('FONTNAME', (0, 0), (-1, -1), 'HYSMyeongJo-Medium'),
+        ('FONTSIZE', (0, 0), (-1, -1), 7),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+    ]))
+
+    elements.append(table)
+
+    doc.build(elements)
+
+    buffer.seek(0)
+    return buffer
+
+
+# =====================================================
 # PAGE CONFIG
-# ==============================
+# =====================================================
 st.set_page_config(
     page_title="SSC CGL 2025 Optimized Predictor",
     layout="wide"
 )
 
-# ==============================
-# HEADER
-# ==============================
 st.markdown(
     "<h1 style='text-align:center;'>🇮🇳 SSC CGL 2025 Optimized Predictor System</h1>",
     unsafe_allow_html=True
 )
 
-# ==============================
+# =====================================================
 # NAVIGATION
-# ==============================
+# =====================================================
 if "page" not in st.session_state:
     st.session_state.page = "Home"
 
@@ -48,7 +100,7 @@ st.divider()
 
 
 # =====================================================
-# ================== HOME PAGE ========================
+# HOME PAGE
 # =====================================================
 if st.session_state.page == "Home":
 
@@ -63,18 +115,15 @@ if st.session_state.page == "Home":
 
 
 # =====================================================
-# ================== PREDICTOR PAGE ===================
+# PREDICTOR PAGE
 # =====================================================
 elif st.session_state.page == "Predictor":
 
-    import os
-    import pandas as pd
-
     st.header("📊 AI-Based Merit & Post Predictor")
 
-    # ===============================
+    # ---------------------------
     # USER INPUT
-    # ===============================
+    # ---------------------------
     st.sidebar.header("Step 1: Your Marks")
 
     u_main = st.sidebar.number_input("Main Paper Marks", 0.0, 390.0, 310.0)
@@ -88,9 +137,9 @@ elif st.session_state.page == "Predictor":
     bonus_stat = st.sidebar.number_input("Bonus Statistics", 0.0, 20.0, 0.0)
     bonus_comp = st.sidebar.number_input("Bonus Computer", 0.0, 20.0, 0.0)
 
-    # ===============================
+    # ---------------------------
     # FILE PATHS
-    # ===============================
+    # ---------------------------
     OVERALL_FILE = "CSV - SSC CGL Mains 2025 Marks List.xlsx - in.csv"
     STAT_FILE = "CSV - SSC CGL Mains 2025 Statistics Paper Marks List (1).csv"
     VAC_FILE = "vacancy_data.csv"
@@ -104,18 +153,14 @@ elif st.session_state.page == "Predictor":
     df_stat = pd.read_csv(STAT_FILE)
     df_vac = pd.read_csv(VAC_FILE)
 
-    # ===============================
-    # PREPARE MERIT LISTS
-    # ===============================
+    # ---------------------------
+    # PREPARE DATA
+    # ---------------------------
     df_overall["TotalScore"] = df_overall["Main Paper Marks"]
     df_stat["TotalScore"] = (
-        df_stat["Main Paper Marks"] +
-        df_stat["Statistics Marks"]
+        df_stat["Main Paper Marks"] + df_stat["Statistics Marks"]
     )
 
-    # ===============================
-    # APPLY BONUS
-    # ===============================
     user_main = u_main + bonus_main
     user_stat = u_stat + bonus_stat
     user_comp_final = u_comp + bonus_comp
@@ -123,11 +168,10 @@ elif st.session_state.page == "Predictor":
     user_total_stat = user_main + user_stat
     user_total_overall = user_main
 
-    # ===============================
+    # ---------------------------
     # RANK CALCULATION
-    # ===============================
+    # ---------------------------
     df_overall_sorted = df_overall.sort_values("TotalScore", ascending=False)
-    df_stat_sorted = df_stat.sort_values("TotalScore", ascending=False)
 
     overall_rank_original = (df_overall_sorted["TotalScore"] > u_main).sum() + 1
     overall_rank_new = (df_overall_sorted["TotalScore"] > user_main).sum() + 1
@@ -137,9 +181,9 @@ elif st.session_state.page == "Predictor":
     category_rank_original = (category_df["TotalScore"] > u_main).sum() + 1
     category_rank_new = (category_df["TotalScore"] > user_main).sum() + 1
 
-    # ===============================
+    # ---------------------------
     # DISPLAY RANK IMPACT
-    # ===============================
+    # ---------------------------
     st.subheader("📈 Rank Impact")
 
     col1, col2 = st.columns(2)
@@ -156,9 +200,9 @@ elif st.session_state.page == "Predictor":
 
     st.divider()
 
-    # ===============================
-    # POST PREDICTION ENGINE
-    # ===============================
+    # ---------------------------
+    # POST PREDICTION
+    # ---------------------------
     st.subheader("🎯 Post Prediction")
 
     predicted_posts = []
@@ -169,7 +213,6 @@ elif st.session_state.page == "Predictor":
 
     for _, row in df_vac.iterrows():
 
-        # Check vacancy count
         if row[u_cat] <= 0:
             continue
 
@@ -180,10 +223,7 @@ elif st.session_state.page == "Predictor":
 
         is_stat_post = row.get("Is_Stat_Post", False)
 
-        if is_stat_post:
-            score_to_check = user_total_stat
-        else:
-            score_to_check = user_total_overall
+        score_to_check = user_total_stat if is_stat_post else user_total_overall
 
         cutoff_column = f"{u_cat}_Cutoff"
 
@@ -202,28 +242,32 @@ elif st.session_state.page == "Predictor":
                 "Cutoff": cutoff_value
             })
 
-    # ===============================
+    # ---------------------------
     # SHOW RESULTS
-    # ===============================
+    # ---------------------------
     if predicted_posts:
         result_df = pd.DataFrame(predicted_posts)
+
         st.success("✅ You are eligible for the following posts:")
         st.dataframe(result_df, use_container_width=True)
+
+        pdf_file = generate_pdf(result_df)
+
+        st.download_button(
+            label="⬇️ Download Category Report PDF",
+            data=pdf_file,
+            file_name="SSC_CGL_2025_Report.pdf",
+            mime="application/pdf"
+        )
+
     else:
         st.error("❌ No post predicted with current marks.")
 
     st.divider()
 
-    # ===============================
-    # CATEGORY CUTOFF TABLE
-    # ===============================
     st.subheader("📋 Category Cutoff Table")
-
     st.dataframe(df_vac, use_container_width=True)
 
-    # ===============================
-    # BONUS INSIGHT
-    # ===============================
     improvement = overall_rank_original - overall_rank_new
 
     if improvement > 0:
@@ -231,72 +275,17 @@ elif st.session_state.page == "Predictor":
     else:
         st.info("No significant rank change from bonus.")
 
-    # -------------------------------
-    # PDF GENERATION
-    # -------------------------------
-def generate_pdf(df):
-
-    buffer = io.BytesIO()
-
-    doc = SimpleDocTemplate(
-        buffer,
-        pagesize=pagesizes.A4
-    )
-
-    elements = []
-
-    # Register Korean-safe font (also works for English)
-    pdfmetrics.registerFont(UnicodeCIDFont('HYSMyeongJo-Medium'))
-
-    title_style = ParagraphStyle(
-        name="TitleStyle",
-        fontName="HYSMyeongJo-Medium",
-        fontSize=14,
-        alignment=1  # Center
-    )
-
-    elements.append(Paragraph("SSC CGL 2025 Category Report", title_style))
-    elements.append(Spacer(1, 12))
-
-    # Convert dataframe to string
-    data = [df.columns.tolist()] + df.astype(str).values.tolist()
-
-    # Auto column width
-    col_widths = [None] * len(df.columns)
-
-    table = Table(data, repeatRows=1, colWidths=col_widths)
-
-    table.setStyle(TableStyle([
-        ('FONTNAME', (0, 0), (-1, -1), 'HYSMyeongJo-Medium'),
-        ('FONTSIZE', (0, 0), (-1, -1), 7),
-        ('BACKGROUND', (0, 0), (-1, 0), colors.lightgrey),
-        ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-    ]))
-
-    elements.append(table)
-
-    doc.build(elements)
-
-    buffer.seek(0)
-    return buffer
-    if not full_df.empty:
-
-    pdf_file = generate_pdf(full_df)
-
-    st.download_button(
-        label="⬇️ Download Category Report PDF",
-        data=pdf_file,
-        file_name="SSC_CGL_2025_Report.pdf",
-        mime="application/pdf"
-    )
-
-
 
 # =====================================================
-# ================== ANALYTICS PAGE ===================
+# ANALYTICS PAGE
 # =====================================================
+elif st.session_state.page == "Analytics":
+
+    st.header("📈 Analytics Dashboard")
+
+    st.info("Analytics section coming soon 🚀")
+
+
 
 
 
